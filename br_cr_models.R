@@ -10,14 +10,8 @@ library(semPlot)
 library(car)
 options(mc.cores=parallel::detectCores())
 
-setwd("/Users/Thomas/Documents/Preasp_Misa/R_scripts/")
-source("data_cleaning.R")
-
-
 ## read in data
-aggregated <- read.csv("/Users/Thomas/Documents/Preasp_Misa/aggregated_data.csv", stringsAsFactors = F, na.strings = c("", "NA"))
-
-
+aggregated <- read.csv("aggregated_data.csv", stringsAsFactors = F, na.strings = c("", "NA"))
 
 ####### PREPARING FOR MODELS ########
 
