@@ -9,7 +9,7 @@ library(tidyverse)
 
 ## Read in data
 
-aggregated <- read.csv("/Users/Thomas/Documents/Preasp_Misa/aggregated_data.csv", stringsAsFactors = F, na.strings = c("", "NA"))
+aggregated <- read.csv("aggregated_data.csv", stringsAsFactors = F, na.strings = c("", "NA"))
 
 ####### PREPARING DATA FOR MODELS ########
 
