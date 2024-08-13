@@ -61,7 +61,11 @@ final <-  aggregated %>% filter(foot=="final")
 ####### Linear mixed effects models (regular frequentist ones to start) #######
 ## I also have a script with some Bayesian versions in brms
 
-model <- glmer(pre ~ cr + br +  Year_scaled + (1 | Word), data=aggregated, family="binomial")
+model <- glmer(pre ~ 
+                 + cr 
+                # + br  
+                # + Year_scaled 
+                 + (1 | Word), data=aggregated, family="binomial")
 summary(model)
 # Shows positive correlation for both cr and br, negative for year
 

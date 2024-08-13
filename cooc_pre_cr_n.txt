@@ -1,0 +1,3 @@
+foot,pre-aspiration alone,breathiness with pre-aspiration,breathiness alone,neither,total
+final,9,19,349,525,902
+medial,0,80,611,468,1159

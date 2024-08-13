@@ -1,6 +1,5 @@
 ## Visualizing the data
-
-library(ggplot2)
+library(tidyverse)
 library(GGally)
 library(scales)
 library(reshape2)
@@ -312,7 +311,7 @@ mycolors <- c("lightcyan2","darkseagreen3","darkseagreen2","cornsilk1")
 
 ##
 pre.br <- aggregated %>%
-  select(1:6,pre,br)
+  select(1:7,pre,br)
 pre.br$pre_br <- ifelse(pre.br$pre==1 & pre.br$br==1,1,0)
 pre.br$pre_alone <- ifelse(pre.br$pre==1 & pre.br$br==0,1,0)
 pre.br$br_alone <- ifelse(pre.br$pre==0 & pre.br$br==1,1,0)
@@ -322,7 +321,7 @@ pre.br$br_alone <- ifelse(pre.br$pre==0 & pre.br$br==1,1,0)
 ## percentages
 
 t <- pre.br %>% 
-  ungroup %>%
+  ungroup() %>%
   group_by(foot) %>%
   summarise(`pre-aspiration alone`=sum(pre_alone)/n(),
             `breathiness with pre-aspiration`=sum(pre_br)/n(),
