@@ -16,21 +16,6 @@ summary(as.factor(aggregated$vowel))
 table(aggregated$vowel)
 table(aggregated$Year)
 
-# t <- with(aggregated, table(vowel,Year))
-# write.table(t, file = "count_vowel_year.txt", sep = ",", quote = FALSE, row.names = T)
-# 
-# t <- with(aggregated, table(vowel))
-# write.table(t, file = "count_vowel.txt", sep = ",", quote = FALSE, row.names = F)
-# 
-# t <- with(aggregated, table(Year))
-# write.table(t, file = "count_year.txt", sep = ",", quote = FALSE, row.names = F)
-# 
-# t <- with(aggregated, table(coda_cons))
-# write.table(t, file = "count_following.txt", sep = ",", quote = FALSE, row.names = F)
-# 
-# t <- with(aggregated, table(foot))
-# write.table(t, file = "count_footing.txt", sep = ",", quote = FALSE, row.names = F)
-
 ### DOING EXCLUSIONS ####
 
 ## Filter out the one token of ɔɪ
@@ -40,6 +25,14 @@ aggregated <- aggregated %>% filter(vowel!="ɔɪ")
 ## Filter out the few that are initial footing
 
 aggregated <- aggregated %>% filter(foot!="initial")
+
+## Get tables
+
+table(aggregated$pre)
+table(aggregated$pre_amb)
+table(aggregated$foot)
+xtabs(~ foot + pre, aggregated)
+xtabs(~ foot + pre, aggregated)
 
 #### GETTING TOKEN COUNTS AFTER EXCLUSIONS #####
 
