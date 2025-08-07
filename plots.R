@@ -32,7 +32,7 @@ table(aggregated$pre)
 table(aggregated$pre_amb)
 table(aggregated$foot)
 xtabs(~ foot + pre, aggregated)
-xtabs(~ foot + pre, aggregated)
+xtabs(~ foot + pre_amb, aggregated)
 
 #### GETTING TOKEN COUNTS AFTER EXCLUSIONS #####
 
@@ -65,6 +65,21 @@ xtabs(~ foot + pre, aggregated)
 
 
 ###### Preasp x consonant #######
+
+df.cons.medial <- aggregated %>%
+  filter(foot == "medial") %>%
+  group_by(coda_cons) %>%
+  summarise(`total medial` = n(),
+            `no. present (incl. ambiguous)` = paste0(sum(pre), " (", sum(pre_amb), ")"),
+            `% present (incl. ambiguous)` = paste0( round(digits = 1, sum(pre)/n() * 100), "% (", round(digits = 1, sum(pre_amb)/n() * 100), "%)"))
+
+df.cons.final <- aggregated %>%
+  filter(foot == "final") %>%
+  group_by(coda_cons) %>%
+  summarise(`total final` = n(),
+            `no. present (incl. ambiguous)` = paste0(sum(pre), " (", sum(pre_amb), ")"),
+            `% present (incl. ambiguous)` = paste0( round(digits = 1, sum(pre)/n() * 100), "% (", round(digits = 1, sum(pre_amb)/n() * 100), "%)"))
+
 
 ## Set colours
 
@@ -123,13 +138,14 @@ df.plot %>%
 
 ## pre by vowel, medial only 
 
-df.plot <- aggregated %>%
+df.vowel.medial <- aggregated %>%
   filter(foot == "medial") %>%
   group_by(vowel) %>%
-  summarise(`definitely present` = sum(pre)/n(),
-            `including ambiguous` = sum(pre_amb)/n())
+  summarise(`total medial` = n(),
+            `no. present (incl. ambiguous)` = paste0(sum(pre), " (", sum(pre_amb), ")"),
+            `% present (incl. ambiguous)` = paste0( round(digits = 1, sum(pre)/n() * 100), "% (", round(digits = 1, sum(pre_amb)/n() * 100), "%)"))
 
-df.plot %>% 
+df.vowel.medial %>% 
   ggplot (aes(x=reorder(vowel, `definitely present`))) +
   geom_segment(aes(y=`definitely present`,xend=vowel,yend=0))+
   geom_point(aes(y=`definitely present`, color="definitely present"), size=4)+
@@ -143,13 +159,14 @@ df.plot %>%
 
 ## pre by vowel, final only 
 
-df.plot <- aggregated %>%
+df.vowel.final <- aggregated %>%
   filter(foot == "final") %>%
   group_by(vowel) %>%
-  summarise(`definitely present` = sum(pre)/n(),
-            `including ambiguous` = sum(pre_amb)/n())
+  summarise(`total final` = n(),
+            `no. present (incl. ambiguous)` = paste0(sum(pre), " (", sum(pre_amb), ")"),
+            `% present (incl. ambiguous)` = paste0( round(digits = 1, sum(pre)/n() * 100), "% (", round(digits = 1, sum(pre_amb)/n() * 100), "%)"))
 
-df.plot %>% 
+df.vowel.final %>% 
   ggplot (aes(x=reorder(vowel, `definitely present`))) +
   geom_segment(aes(y=`definitely present`,xend=vowel,yend=0))+
   geom_point(aes(y=`definitely present`, color="definitely present"), size=4)+
@@ -184,36 +201,42 @@ p <- df.plot %>%
   ylab("Proportion of tokens") +
   labs(title='Proportion of tokens with pre-aspiration present by year') +
   theme(plot.title = element_text(hjust = 0.5)) +
-  stat_smooth(aes(fill=`Pre-aspiration`, color=`Pre-aspiration`), method="lm",se=T) +
-  stat_regline_equation(aes(label=paste(..adj.rr.label..)), label.x = 2005)
+  stat_smooth(aes(fill=`Pre-aspiration`, color=`Pre-aspiration`), method="lm",se=T) 
 
 ggpar(p, palette = c("orange","red"))
 
+test <- df.plot %>%
+  filter(`Pre-aspiration` == "definitely present")
+cor.test(~ proportion + Year, test) # r and p value
+test <- df.plot %>%
+  filter(`Pre-aspiration` == "including ambiguous")
+cor.test(~ proportion + Year, test) # r and p value
 
-## pre by year + best fit line, excluding 1964
-
-aggregated$Year <- as.numeric(aggregated$Year)
-df.plot <- aggregated %>%
-  filter(Year != 1964) %>% 
-  group_by(Year) %>%
-  summarise(`definitely present` = sum(pre)/n(),
-            `including ambiguous` = sum(pre_amb)/n()) %>%
-  gather(`Pre-aspiration`, proportion, -Year) %>%
-  mutate(`Pre-aspiration` = factor(`Pre-aspiration`, levels=c("including ambiguous","definitely present")))
-
-p <- df.plot %>%
-  ggplot (aes(x=Year, y=proportion, color=`Pre-aspiration`)) +
-  geom_point(size=4)+
-  scale_x_continuous() +
-  theme_bw()+
-  xlab("Year")+
-  ylab("Proportion of tokens") +
-  labs(title='Proportion of tokens with pre-aspiration present by year, excluding 1964') +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  stat_smooth(aes(fill=`Pre-aspiration`, color=`Pre-aspiration`), method="lm",se=T) +
-  stat_regline_equation(aes(label=paste(..adj.rr.label..)), label.x = 2005)
-
-ggpar(p, palette = c("orange","red"))
+# 
+# ## pre by year + best fit line, excluding 1964
+# 
+# aggregated$Year <- as.numeric(aggregated$Year)
+# df.plot <- aggregated %>%
+#   filter(Year != 1964) %>% 
+#   group_by(Year) %>%
+#   summarise(`definitely present` = sum(pre)/n(),
+#             `including ambiguous` = sum(pre_amb)/n()) %>%
+#   gather(`Pre-aspiration`, proportion, -Year) %>%
+#   mutate(`Pre-aspiration` = factor(`Pre-aspiration`, levels=c("including ambiguous","definitely present")))
+# 
+# p <- df.plot %>%
+#   ggplot (aes(x=Year, y=proportion, color=`Pre-aspiration`)) +
+#   geom_point(size=4)+
+#   scale_x_continuous() +
+#   theme_bw()+
+#   xlab("Year")+
+#   ylab("Proportion of tokens") +
+#   labs(title='Proportion of tokens with pre-aspiration present by year, excluding 1964') +
+#   theme(plot.title = element_text(hjust = 0.5)) +
+#   stat_smooth(aes(fill=`Pre-aspiration`, color=`Pre-aspiration`), method="lm",se=T) +
+#   stat_regline_equation(aes(label=paste(..adj.rr.label..)), label.x = 2005)
+# 
+# ggpar(p, palette = c("orange","red"))
 
 
 ####### Breathiness x year ######
@@ -237,36 +260,41 @@ p <- df.plot %>%
   ylab("Proportion of tokens") +
   labs(title='Proportion of tokens with breathiness present by year') +
   theme(plot.title = element_text(hjust = 0.5)) +
-  stat_smooth(aes(fill=Breathiness, color=Breathiness), method="lm",se=T) +
-  stat_regline_equation(aes(label=paste(..adj.rr.label..)), label.x = 2005)
-
+  stat_smooth(aes(fill=Breathiness, color=Breathiness), method="lm",se=T) 
 ggpar(p, palette = c("orange","red"))
 
+test <- df.plot %>%
+  filter(Breathiness == "definitely present")
+cor.test(~ proportion + Year, test) # r and p value
+test <- df.plot %>%
+  filter(Breathiness == "including ambiguous")
+cor.test(~ proportion + Year, test) # r and p value
 
-## breathiness by year + best fit line, excluding 1964
-
-aggregated$Year <- as.numeric(aggregated$Year)
-df.plot <- aggregated %>%
-  filter(Year != 1964) %>%
-  group_by(Year) %>%
-  summarise(`definitely present` = sum(br)/n(),
-            `including ambiguous` = sum(br_amb)/n()) %>%
-  gather(Breathiness, proportion, -Year) %>%
-  mutate(Breathiness = factor(Breathiness, levels=c("including ambiguous","definitely present")))
-
-p <- df.plot %>%
-  ggplot (aes(x=Year, y=proportion, color=Breathiness)) +
-  geom_point(size=4)+
-  scale_x_continuous() +
-  theme_bw()+
-  xlab("Year")+
-  ylab("Proportion of tokens") +
-  labs(title='Proportion of tokens with breathiness present by year, excluding 1964') +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  stat_smooth(aes(fill=Breathiness, color=Breathiness), method="lm",se=T) +
-  stat_regline_equation(aes(label=paste(..adj.rr.label..)), label.x = 2005)
-
-ggpar(p, palette = c("orange","red"))
+# 
+# ## breathiness by year + best fit line, excluding 1964
+# 
+# aggregated$Year <- as.numeric(aggregated$Year)
+# df.plot <- aggregated %>%
+#   filter(Year != 1964) %>%
+#   group_by(Year) %>%
+#   summarise(`definitely present` = sum(br)/n(),
+#             `including ambiguous` = sum(br_amb)/n()) %>%
+#   gather(Breathiness, proportion, -Year) %>%
+#   mutate(Breathiness = factor(Breathiness, levels=c("including ambiguous","definitely present")))
+# 
+# p <- df.plot %>%
+#   ggplot (aes(x=Year, y=proportion, color=Breathiness)) +
+#   geom_point(size=4)+
+#   scale_x_continuous() +
+#   theme_bw()+
+#   xlab("Year")+
+#   ylab("Proportion of tokens") +
+#   labs(title='Proportion of tokens with breathiness present by year, excluding 1964') +
+#   theme(plot.title = element_text(hjust = 0.5)) +
+#   stat_smooth(aes(fill=Breathiness, color=Breathiness), method="lm",se=T) +
+#   stat_regline_equation(aes(label=paste(..adj.rr.label..)), label.x = 2005)
+# 
+# ggpar(p, palette = c("orange","red"))
 
 
 ####### Creakiness x year ########
@@ -292,6 +320,73 @@ p <- df.plot %>%
   stat_regline_equation(aes(label=paste(..adj.rr.label..)), label.x = 1957, color="red")
 
 ggpar(p, palette = c("red"))
+
+test <- df.plot
+cor.test(~ proportion + Year, test) # r and p value
+
+###### All together ######
+
+aggregated$Year <- as.numeric(aggregated$Year)
+
+df.preasp <- aggregated %>%
+  group_by(Year) %>%
+  summarise(`definitely present` = sum(pre)/n(),
+            `including ambiguous` = sum(pre_amb)/n()) %>%
+  gather(`Pre-aspiration`, proportion, -Year) %>%
+  mutate(`Pre-aspiration` = factor(`Pre-aspiration`, levels=c("including ambiguous","definitely present")))
+
+df.preasp <- df.preasp %>%
+  rename(presence = `Pre-aspiration`)
+
+df.preasp$measure <- "pre-aspiration"
+
+df.breath <- aggregated %>%
+  group_by(Year) %>%
+  summarise(`definitely present` = sum(br)/n(),
+            `including ambiguous` = sum(br_amb)/n()) %>%
+  gather(Breathiness, proportion, -Year) %>%
+  mutate(Breathiness = factor(Breathiness, levels=c("including ambiguous","definitely present")))
+
+df.breath <- df.breath %>%
+  rename(presence = Breathiness)
+
+df.breath$measure <- "breathiness"
+
+df.creak <- aggregated %>%
+  group_by(Year) %>%
+  summarise(`definitely present` = sum(cr)/n()) %>%
+  gather(Glottalisation, proportion, -Year)
+
+df.creak <- df.creak %>%
+  rename(presence = Glottalisation)
+
+df.creak$measure <- "glottalisation"
+
+bound <- bind_rows(df.preasp, df.creak, df.breath)
+
+bound %>%
+  ggplot (aes(x=Year, y=proportion, color = measure, linetype = presence)) +
+  geom_point(size=4, color="red")+
+  scale_x_continuous() +
+  theme_bw()+
+  xlab("Year")+
+  ylab("Proportion of tokens") +
+  labs(title='Proportion of tokens with pre-aspiration, glottalisation, and breathiness by year') +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  stat_smooth(aes(fill=Glottalisation, color=Glottalisation), method="lm",se=T) 
+
+ggplot(bound, aes(x = Year, y = proportion, color = measure, linetype = presence, shape=presence)) +
+  geom_point() +
+  stat_smooth(method = "lm", se = TRUE, aes(group = interaction(measure, presence))) +
+  labs(
+    x = "Year",
+    y = "Proportion",
+    color = "Measure",
+    linetype = "Presence",
+    shape = "Presence"
+  ) +
+  theme_minimal()
+
 
 
 
