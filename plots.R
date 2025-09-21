@@ -34,36 +34,6 @@ table(aggregated$foot)
 xtabs(~ foot + pre, aggregated)
 xtabs(~ foot + pre_amb, aggregated)
 
-#### GETTING TOKEN COUNTS AFTER EXCLUSIONS #####
-
-# summary(aggregated)
-# 
-# p <- aggregated %>% 
-#   ungroup() %>% 
-#   group_by(Year) %>%
-#   summarise(total_tokens=n(),
-#             pre_tokens=sum(pre),
-#             pre_amb_tokens=sum(pre_amb),
-#             pre_percent= round(100*pre_tokens/total_tokens, 1),
-#             pre_amb_percent= round(100*pre_amb_tokens/total_tokens, 1))
-# write.table(p, file = "pre_year.txt", sep = ",", quote = FALSE, row.names = F)
-# 
-# t <- with(aggregated, table(vowel,Year))
-# write.table(t, file = "count_vowel_year.txt", sep = ",", quote = FALSE, row.names = T)
-# 
-# t <- with(aggregated, table(vowel))
-# write.table(t, file = "count_vowel.txt", sep = ",", quote = FALSE, row.names = F)
-# 
-# t <- with(aggregated, table(Year))
-# write.table(t, file = "count_year.txt", sep = ",", quote = FALSE, row.names = F)
-# 
-# t <- with(aggregated, table(coda_cons))
-# write.table(t, file = "count_following.txt", sep = ",", quote = FALSE, row.names = F)
-# 
-# t <- with(aggregated, table(foot))
-# write.table(t, file = "count_footing.txt", sep = ",", quote = FALSE, row.names = F)
-
-
 ###### Preasp x consonant #######
 
 df.cons.medial <- aggregated %>%
@@ -108,7 +78,6 @@ df.plot %>%
   labs(color='Pre-aspiration', title='Proportion of tokens with pre-aspiration, medial footing') 
 
 
-
 ## pre by following consonant (final only)
 
 df.plot <- aggregated %>%
@@ -145,18 +114,6 @@ df.vowel.medial <- aggregated %>%
             `no. present (incl. ambiguous)` = paste0(sum(pre), " (", sum(pre_amb), ")"),
             `% present (incl. ambiguous)` = paste0( round(digits = 1, sum(pre)/n() * 100), "% (", round(digits = 1, sum(pre_amb)/n() * 100), "%)"))
 
-df.vowel.medial %>% 
-  ggplot (aes(x=reorder(vowel, `definitely present`))) +
-  geom_segment(aes(y=`definitely present`,xend=vowel,yend=0))+
-  geom_point(aes(y=`definitely present`, color="definitely present"), size=4)+
-  geom_segment(aes(y=`including ambiguous`,xend=vowel,yend=0),linetype="dotdash")+
-  geom_point(aes(y=`including ambiguous`,color="including ambiguous"), size=4)+
-  theme_bw()+
-  scale_color_manual(values=colors) +
-  xlab("Preceding vowel")+
-  ylab("Proportion of tokens with pre-aspiration present, medial footing") +
-  labs(color='Pre-aspiration') 
-
 ## pre by vowel, final only 
 
 df.vowel.final <- aggregated %>%
@@ -165,19 +122,6 @@ df.vowel.final <- aggregated %>%
   summarise(`total final` = n(),
             `no. present (incl. ambiguous)` = paste0(sum(pre), " (", sum(pre_amb), ")"),
             `% present (incl. ambiguous)` = paste0( round(digits = 1, sum(pre)/n() * 100), "% (", round(digits = 1, sum(pre_amb)/n() * 100), "%)"))
-
-df.vowel.final %>% 
-  ggplot (aes(x=reorder(vowel, `definitely present`))) +
-  geom_segment(aes(y=`definitely present`,xend=vowel,yend=0))+
-  geom_point(aes(y=`definitely present`, color="definitely present"), size=4)+
-  geom_segment(aes(y=`including ambiguous`,xend=vowel,yend=0),linetype="dotdash")+
-  geom_point(aes(y=`including ambiguous`,color="including ambiguous"), size=4)+
-  theme_bw()+
-  scale_color_manual(values=colors) +
-  xlab("Preceding vowel")+
-  ylab("Proportion of tokens with pre-aspiration present, final footing") +
-  labs(color='Pre-aspiration') 
-
 
 
 ###### Preasp x year #######
@@ -364,17 +308,6 @@ df.creak$measure <- "glottalisation"
 
 bound <- bind_rows(df.preasp, df.creak, df.breath)
 
-bound %>%
-  ggplot (aes(x=Year, y=proportion, color = measure, linetype = presence)) +
-  geom_point(size=4, color="red")+
-  scale_x_continuous() +
-  theme_bw()+
-  xlab("Year")+
-  ylab("Proportion of tokens") +
-  labs(title='Proportion of tokens with pre-aspiration, glottalisation, and breathiness by year') +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  stat_smooth(aes(fill=Glottalisation, color=Glottalisation), method="lm",se=T) 
-
 ggplot(bound, aes(x = Year, y = proportion, color = measure, linetype = presence, shape=presence)) +
   geom_point() +
   stat_smooth(method = "lm", se = TRUE, aes(group = interaction(measure, presence))) +
@@ -386,8 +319,6 @@ ggplot(bound, aes(x = Year, y = proportion, color = measure, linetype = presence
     shape = "Presence"
   ) +
   theme_minimal()
-
-
 
 
 
@@ -855,47 +786,4 @@ br.release.summary %>%
   theme(plot.title = element_text(hjust = 0.5))+
   guides(fill=guide_legend(title="Release type", , reverse=T)) 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# 
-# 
-# 
-# 
-# mean_environments <- aggregated %>% 
-#   group_by(vowel,coda_cons,foot) %>% 
-#   summarise(pre=mean(pre),br=mean(br),cr=mean(cr),unrel=mean(unrel),sp=mean(sp))
-# 
-
-## Attempt to create a function, but doesnʻt work
-# percent_barplot <- function(group,aspect) {
-#   
-#   group_var <- enquo(group)
-#   aspect_var <- enquo(var)
-#   
-#   df.plot <- aggregated %>%
-#     group_by(!!group_var) %>%
-#     summarise(present = sum(!!aspect_var)/n(),
-#               absent = 1-present)}
-# 
-# 
-#   df.plot %>%
-#     melt() %>%
-#     ggplot (aes(x=group_var, y=value, fill=variable)) +
-#     geom_bar(stat = "identity", position = "stack")
-# 
-# 
-# percent_barplot(vowel,pre)
 
