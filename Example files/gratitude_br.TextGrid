@@ -1,0 +1,40 @@
+File type = "ooTextFile"
+Object class = "TextGrid"
+
+xmin = 0 
+xmax = 0.6903339134802309 
+tiers? <exists> 
+size = 2 
+item []: 
+    item [1]:
+        class = "IntervalTier" 
+        name = "wordPre" 
+        xmin = 0 
+        xmax = 0.6903339134802309 
+        intervals: size = 1 
+        intervals [1]:
+            xmin = 0 
+            xmax = 0.6903339134802309 
+            text = "gratitude sp" 
+    item [2]:
+        class = "IntervalTier" 
+        name = "pre" 
+        xmin = 0 
+        xmax = 0.6903339134802309 
+        intervals: size = 4 
+        intervals [1]:
+            xmin = 0 
+            xmax = 0.14985898020770327 
+            text = "" 
+        intervals [2]:
+            xmin = 0.14985898020770327 
+            xmax = 0.1954387197838514 
+            text = "br" 
+        intervals [3]:
+            xmin = 0.1954387197838514 
+            xmax = 0.27151861993839077 
+            text = "/t/ spirant" 
+        intervals [4]:
+            xmin = 0.27151861993839077 
+            xmax = 0.6903339134802309 
+            text = "" 
