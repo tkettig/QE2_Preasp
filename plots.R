@@ -6,7 +6,7 @@ library(reshape2)
 library(directlabels)
 library(ggpubr)
 
-setwd("/Users/Thomas/Documents/Preasp_Misa/GitHub/QE2_Preasp")
+setwd("/Users/Thomas/Library/CloudStorage/OneDrive-YorkUniversity/QE2_Preasp/GitHub/QE2_Preasp/")
 aggregated <- read.csv("aggregated_data.csv")
 
 #### GETTING TOKEN COUNTS BEFORE EXCLUSIONS #####
@@ -318,7 +318,9 @@ ggplot(bound, aes(x = Year, y = proportion, color = measure, linetype = presence
     linetype = "Presence",
     shape = "Presence"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  guides(linetype = "none", shape = "none")
+  
 
 
 
